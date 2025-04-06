@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加法計算器</title>
+    <style>
+        body { font-family: Arial; max-width: 400px; margin: 0 auto; padding: 20px; }
+        input, button { padding: 10px; margin: 10px 0; width: 100%; }
+        button { background: #4CAF50; color: white; border: none; cursor: pointer; }
+        #result { font-weight: bold; margin-top: 15px; }
+        .back-link { display: block; margin-top: 20px; text-align: center; color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>加法計算器</h1>
+    <input type="number" id="num1" placeholder="數字 1">
+    <input type="number" id="num2" placeholder="數字 2">
+    <button onclick="calculate()">計算</button>
+    <div id="result"></div>
+    <a href="../index.html" class="back-link">← 返回主頁</a>  <!-- 返回根目录的 index.html -->
+
+    <!-- 调用同文件夹下的 calculator.js -->
+    <script src="calculator.js"></script>
+</body>
+</html>
