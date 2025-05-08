@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老師管理頁面</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>學生提交狀態</h1>
+        <label for="github_token">GitHub Personal Access Token：</label>
+        <input type="password" id="github_token" placeholder="輸入你的 token">
+        <button onclick="fetchStatus()">刷新狀態</button>
+        <table id="status-table">
+            <thead>
+                <tr>
+                    <th>學號</th>
+                    <th>狀態</th>
+                </tr>
+            </thead>
+            <tbody id="status-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchStatus() {
+            const token = $('#github_token').val().trim();
+            if (!token) {
+                alert('請輸入 GitHub Personal Access Token！');
+                return;
+            }
+
+            // 獲取學生清單
+            const studentResponse = await fetch('students.json');
+            const students = await studentResponse.json();
+
+            // 獲取 GitHub Issues
+            const repo = window.location.pathname.split('/').slice(1, 3).join('/'); // 自動獲取倉庫名
+            const issuesResponse = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+
+            if (!issuesResponse.ok) {
+                alert('無法獲取 Issues：' + issuesResponse.statusText);
+                return;
+            }
+
+            const issues = await issuesResponse.json();
+            const submittedIds = issues.map(issue => issue.title);
+
+            // 更新表格
+            const tbody = $('#status-body');
+            tbody.empty();
+            students.forEach(studentId => {
+                const status = submittedIds.includes(studentId) ? '已提交' : '未提交';
+                tbody.append(`<tr><td>${studentId}</td><td>${status}</td></tr>`);
+            });
+        }
+
+        async function submitStudentId(studentId, token, repo) {
+            const response = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    title: studentId,
+                    body: `學生 ${studentId} 已提交`
+                })
+            });
+            return response.ok;
+        }
+    </script>
+</body>
+</html>
