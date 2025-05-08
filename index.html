@@ -30,19 +30,24 @@
             }
 
             // 獲取學生清單
-            const response = await fetch('students.json');
-            const students = await response.json();
-            if (!students.includes(studentId)) {
-                $('#submit-result').text('無效的學號！').css('color', 'red');
-                return;
+            try {
+                const response = await fetch('students.json');
+                if (!response.ok) {
+                    throw new Error('無法加載學生清單');
+                }
+                const students = await response.json();
+                if (!students.includes(studentId)) {
+                    $('#submit-result').text('無效的學號！').css('color', 'red');
+                    return;
+                }
+
+                // 模擬提交
+                $('#submit-result').text('提交成功！請聯繫老師確認。').css('color', 'green');
+                $('#student_id').val('');
+                alert('請將你的學號告知老師，由老師記錄到 GitHub Issues。');
+            } catch (error) {
+                $('#submit-result').text('錯誤：' + error.message).css('color', 'red');
             }
-
-            // 模擬提交（學生端無需 token，提示學生提交成功）
-            $('#submit-result').text('提交成功！請稍後由老師確認。').css('color', 'green');
-            $('#student_id').val('');
-
-            // 實際提交將由老師在管理頁面處理（可選：學生可手動創建 Issue）
-            alert('請聯繫老師確保你的提交記錄在 GitHub Issues 中。');
         }
     </script>
 </body>
