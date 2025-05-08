@@ -1,159 +1,49 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI應用工具(試用版123)</title>
+    <title>文章閱讀與學號提交</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body {
-            font-family: 'Noto Sans TC', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 32px;
-            color: #2c3e50;
-            padding: 30px 0;
-            margin: 0;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-            margin: 20px 0;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            vertical-align: top;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease;
-        }
-
-        th {
-            background: #3498db;
-            color: white;
-            font-weight: bold;
-        }
-
-        td:hover {
-            transform: translateY(-3px);
-        }
-
-        ul {
-            padding-left: 20px;
-            margin: 0;
-            list-style: none;
-        }
-
-        li {
-            margin: 10px 0;
-        }
-
-        a {
-            text-decoration: none;
-            color: #2980b9;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        a:hover {
-            color: #e74c3c;
-            text-decoration: underline;
-        }
-
-        /* 響應式設計 */
-        @media screen and (max-width: 768px) {
-            table, thead, tbody, th, td, tr {
-                display: block;
-            }
-
-            th {
-                border-radius: 8px 8px 0 0;
-            }
-
-            td {
-                border-radius: 0 0 8px 8px;
-                position: relative;
-                padding-left: 15px;
-            }
-
-            td:before {
-                content: attr(data-label);
-                display: block;
-                font-weight: bold;
-                color: #3498db;
-                margin-bottom: 10px;
-            }
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        #submit-result { margin-top: 10px; }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>AI應用工具(試用版)</h1>
     <div class="container">
-        <table>
-            <tr>
-                <th>小學</th>
-                <th>初一</th>
-                <th>初二</th>
-                <th>初三</th>
-                <th>美術</th>
-            </tr>
-            <tr>
-                <td data-label="小學">
-                    <ul>
-                        <li><a href="p1/p1math2digitsumtool3.html">小學數學-兩位數進位輔助</a></li>
-                      
-                    </ul>
-                </td>
-                <td data-label="初一">
-                    <ul>
-                        <li><a href="grade7_page1.html">初一連結1未生成</a></li>
-                       
-                    </ul>
-                </td>
-                <td data-label="初二">
-                    <ul>
-                     
-                        <li><a href="q/question.html">勾股定理選擇題</a></li>
-                      
-                    </ul>
-                </td>
-                <td data-label="初三">
-                    <ul>
-                        <li><a href="f3/f3artmandala.html">中心對稱圖形設計</a></li>
-                        <li><a href="f3/f3mathroll.html">拋骰模擬器</a></li>
-                       
-                    </ul>
-                </td>
-                <td data-label="美術">
-                    <ul>
-                        <li><a href="art/f2art2point.html">2點透視</a></li>
-                        <li><a href="art/f7artqrcode.html">二維碼生成器</a></li>
-                        <li><a href="art/f7toolsmark2.html">入分工具2</a></li>
-                    </ul>
-                </td>
-            </tr>
-        </table>
+        <h1>閱讀文章</h1>
+        <p>這是文章內容，學生請閱讀後提交學號。</p>
+        <label for="student_id">學號：</label>
+        <input type="text" id="student_id" placeholder="輸入你的學號">
+        <button onclick="submitStudentId()">提交</button>
+        <div id="submit-result"></div>
     </div>
-    <footer>
-        <p>© 2025 ukawai</p>
-    </footer>
+
+    <script>
+        async function submitStudentId() {
+            const studentId = $('#student_id').val().trim();
+            if (!studentId) {
+                $('#submit-result').text('請輸入學號！').css('color', 'red');
+                return;
+            }
+
+            // 獲取學生清單
+            const response = await fetch('students.json');
+            const students = await response.json();
+            if (!students.includes(studentId)) {
+                $('#submit-result').text('無效的學號！').css('color', 'red');
+                return;
+            }
+
+            // 模擬提交（學生端無需 token，提示學生提交成功）
+            $('#submit-result').text('提交成功！請稍後由老師確認。').css('color', 'green');
+            $('#student_id').val('');
+
+            // 實際提交將由老師在管理頁面處理（可選：學生可手動創建 Issue）
+            alert('請聯繫老師確保你的提交記錄在 GitHub Issues 中。');
+        }
+    </script>
 </body>
 </html>
